@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CAT</title>
+    </head>
+    <body>
+        {% if error %}
+            <script>
+                alert('Invalid user!');
+            </script>
+        {% endif %}
+        <h1>CAT</h1>
+        <div>
+            <form action="/login" method="POST">
+                <label for="username">Username</label><br>
+                <input type="txt" id="username" name="username"><br>
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password"><br>
+                <input type="submit" value="Login"><br>
+            </form>
+        </div>
+        <div>
+            <h3>Register here</h3>
+            <a href="/candiadte_signup"><button>Register</button></a>
+        </div>
+    </body>
+</html>
