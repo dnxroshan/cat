@@ -12,15 +12,18 @@ class FormLogin(Form):
             validators.DataRequired(),
         ]
     )
+    
     password = PasswordField(
         'password',
         validators=[
             validators.DataRequired()
         ]
     )
+
     submit = SubmitField(
         'submit',
         validators=[
             validators.DataRequired()
         ]
     )
+
