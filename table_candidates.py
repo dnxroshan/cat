@@ -2,7 +2,7 @@
 import pymysql
 import config
 
-class TableCandidates():
+class TableCandidates:
     def __connect(self):
         return pymysql.connect(host=config.HOST,
                                user=config.USER,
@@ -10,14 +10,15 @@ class TableCandidates():
                                db=config.DATABASE
         )
 
-    def add_candidate(self, data):
+    def add(self, data):
         connection = self.__connect()
 
         with connection as cursor:
             query = 'INSERT INTO candidates VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);'
             cursor.execute(query, tuple(data.values()))
+            connection.commit()
 
-    def get_candidate(self, username):
+    def get(self, username):
         connection = self.__connect()
 
         with connection as cursor:
