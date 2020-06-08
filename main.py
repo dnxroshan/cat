@@ -20,6 +20,7 @@ from table_examiners import TableExaminers
 from table_tests import TableTests
 
 from form_login import FormLogin
+from form_candidate_reg import FormCandidateReg
 
 from user import User
 from crypto import Crypto
@@ -65,23 +66,26 @@ def login():
             form.username.errors.append('User not registrad')
             return render_template('home.html', form_login=form)
 
-    if crypto.validate_password(form.password.data, user_data['salt'], user_data['hashed']):
-        user = User(form.username.data)
-        login_user(user)
+        if crypto.validate_password(form.password.data, user_data['salt'], user_data['hashed']):
+            user = User(form.username.data)
+            login_user(user)
 
-        if user_data['type'] == constants.UserType.Candidate:
-            return redirect(url_for('candidate'))
-        elif user_data['type'] == constants.UserType.Examiner:
-            return redirect(url_for('examiner', tab='add-test'))
+            if user_data['type'] == constants.UserType.Candidate:
+                return redirect(url_for('candidate'))
+            elif user_data['type'] == constants.UserType.Examiner:
+                return redirect(url_for('examiner', tab='add-test'))
+            else:
+                return redirect(url_for('admin'))
         else:
-            return redirect(url_for('admin'))
-    else:
-        form.password.errors.append('Incorrect password')
-        return render_template('home.html', form_login=form)
+            form.password.errors.append('Incorrect password')
+            return render_template('home.html', form_login=form)
+
+    return render_template('home.html', form_login=form)
 
 @app.route('/candiadte-registration')
 def candidate_registration():
-    return render_template('candidate_registration.html')
+    form_reg = FormCandidateReg()
+    return render_template('candidate_registration.html', form_reg=form_reg)
 
 @app.route('/examiner-registration')
 def examiner_registration():
@@ -89,28 +93,29 @@ def examiner_registration():
 
 @app.route('/candiadte-registration/add-candidate', methods=['POST'])
 def add_candidate():
-    form = dict(request.form)
+    form = FormCandidateReg(request.form)
 
-    if table_users.get(form['username']):
-        return redirect(url_for('candidate_signup'))
-    if form['password'] != form['passwordre']:
-        return redirect(url_for('candidate_signup'))
+    if form.validate():
+        if table_users.get(form.username.data):
+            form.username.errors.append('This username is not available.')
+            return render_template('candidate_registration.html', form_reg=form)
 
-    add_user(form['username'], form['password'], constants.UserType.Candidate)
+        add_user(form.username.data, form.password.data, constants.UserType.Candidate)
 
-    candidate_data = {
-        'username'  : form['username'],
-        'first_name': form['first_name'],
-        'last_name' : form['last_name'],
-        'dob'       : form['dob'],
-        'gender'    : form['gender'],
-        'standard'  : form['standard'],
-        'school'    : form['school'],
-        'email'     : form['email'],
-        'phone'     : form['phone']
-    }
-    table_candidates.add(candidate_data)
-    return redirect(url_for('home'))
+        candidate_data = {
+            'username'  : form.username.data,
+            'first_name': form.first_name.data,
+            'last_name' : form.last_name.data,
+            'dob'       : form.dob.data,
+            'gender'    : form.gender.data,
+            'standard'  : form.standard.data,
+            'school'    : form.school.data,
+            'email'     : form.email.data,
+            'phone'     : form.phone.data
+        }
+        table_candidates.add(candidate_data)
+        return redirect(url_for('home'))
+    return render_template('candidate_registration.html', form_reg=form)
 
 @app.route('/examiner-registration/add-examiner', methods=['POST'])
 def add_examiner():
