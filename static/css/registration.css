@@ -1,0 +1,26 @@
+
+#reg-form {
+    margin-left: 40px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    width: 80%;
+}
+
+#first_name{
+    width: 40%;
+}
+#last_name{
+    width: 25%;
+}
+input[type=password], #username{
+    width:20%;
+}
+#school{
+    width: 30%;
+}
+input[type=tel], #username{
+    width:15%;
+}
+input[type=email], #username{
+    width:20%;
+}
