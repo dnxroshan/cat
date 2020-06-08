@@ -1,4 +1,6 @@
 
+import os
+
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -12,12 +14,12 @@ from flask_login import login_user
 from flask_login import logout_user
 from flask_login import current_user
 
-import os
-
 from table_users import TableUsers
 from table_candidates import TableCandidates
 from table_examiners import TableExaminers
 from table_tests import TableTests
+
+from form_login import FormLogin
 
 from user import User
 from crypto import Crypto
@@ -49,21 +51,22 @@ def user_loader(user_id):
 '''
 @app.route('/')
 def home():
-    return render_template('home.html')
+    form_login = FormLogin()
+    return render_template('home.html', form_login=form_login)
 
 @app.route('/login', methods=['POST'])
 def login():
-    error = False
-    username = request.form.get('username')
-    password = request.form.get('password')
 
-    user_data = table_users.get(username)
+    form = FormLogin(request.form)
 
-    if not user_data:
-        return redirect(url_for('home'))
+    if form.validate():
+        user_data = table_users.get(form.username.data)
+        if not user_data:
+            form.username.errors.append('User not registrad')
+            return render_template('home.html', form_login=form)
 
-    if crypto.validate_password(password, user_data['salt'], user_data['hashed']):
-        user = User(username)
+    if crypto.validate_password(form.password.data, user_data['salt'], user_data['hashed']):
+        user = User(form.username.data)
         login_user(user)
 
         if user_data['type'] == constants.UserType.Candidate:
@@ -72,8 +75,9 @@ def login():
             return redirect(url_for('examiner', tab='add-test'))
         else:
             return redirect(url_for('admin'))
-            
-    return redirect(url_for('home'))
+    else:
+        form.password.errors.append('Incorrect password')
+        return render_template('home.html', form_login=form)
 
 @app.route('/candiadte-registration')
 def candidate_registration():

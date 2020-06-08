@@ -28,11 +28,26 @@
     </div>
     <div id="col-2">
         <form action="/login" method="POST">
+            {{ form_login.csrf_token }}
             <label for="username" class="label">Username</label><br>
-            <input type="text" id="username" name="username" class="text-box"><br>
+            {{ form_login.username(class="text-box") }}<br>
+            {% if form_login.username.errors %}
+                <ul class="errors">
+                    {% for error in form_login.username.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
             <label for="password" class="label">Password</label><br>
-            <input type="password" id="password" name="password" class="text-box"><br>
-            <input type="submit" value="Login" class="button-green"><br>
+            {{ form_login.password(class="text-box") }}<br>
+            {% if form_login.password.errors %}
+            <ul class="errors">
+                {% for error in form_login.password.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {{ form_login.submit(value="Login", class="button-green") }}<br>
         </form>
     </div>
 </div>

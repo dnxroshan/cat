@@ -248,3 +248,10 @@ footer {
   width: 60%;
 }
 
+ul.errors {
+  list-style-type: none;
+  padding: 0;
+  margin: 5px 5px;
+  color: red;
+  }
+
