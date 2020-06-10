@@ -22,7 +22,7 @@ from table_tests import TableTests
 from form_login import FormLogin
 from form_candidate_reg import FormCandidateReg
 from form_examiner_reg import FormExaminerReg
-
+from form_search_tests import FormSearchTests
 from user import User
 from crypto import Crypto
 from misc import *
@@ -72,9 +72,9 @@ def login():
             login_user(user)
 
             if user_data['type'] == constants.UserType.Candidate:
-                return redirect(url_for('candidate'))
+                return redirect(url_for('candidate', title='', subject='All', date=''))
             elif user_data['type'] == constants.UserType.Examiner:
-                return redirect(url_for('examiner', tab='add-test'))
+                return redirect(url_for('examiner'))
             else:
                 return redirect(url_for('admin'))
         else:
@@ -159,7 +159,25 @@ def examiner():
 @login_required
 def candidate():
     authorized(constants.UserType.Candidate)
-    return render_template('candidate.html')
+    form_search_tests = FormSearchTests()
+    data_tests = None
+    candidate_data = table_candidates.get(current_user.get_id())
+
+    if request.args:
+        form_search_tests = FormSearchTests(request.args)
+        data_tests = table_tests.search(
+            form_search_tests.title.data,
+            form_search_tests.subject.data,
+            form_search_tests.date.data,
+            candidate_data['standard']
+        )
+
+    return render_template(
+        'candidate.html', 
+        username=current_user.get_id(),
+        form_search_tests=form_search_tests,
+        data_tests=data_tests
+    )
 
 @app.route('/examiner/add-test', methods=['POST'])
 @login_required
@@ -185,7 +203,7 @@ def add_test():
     table_tests.add(new_test)
     qb_filename = generate_qb_filename(new_test_id)
     uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], qb_filename))
-    return redirect(url_for('add_test'))
+    return redirect(url_for('examiner'))
 
 @app.route('/examiner/get-tests', methods = ['GET'])
 @login_required

@@ -103,3 +103,47 @@ class TableTests:
             cursor.execute(query)
             return cursor.fetchone()[0]
 
+    def search(self, title, subject, date, standard):
+        connection = self.__connect()
+
+        if not title:
+            title = '%'
+        if subject == 'All':
+            subject = '%'
+        if not date:
+            date = '%'
+
+        query = ''' SELECT
+                        test_id, 
+                        title, 
+                        description, 
+                        date, 
+                        subject, 
+                        examiner 
+                    FROM tests 
+                    WHERE 
+                        title LIKE %s 
+                    AND date LIKE %s
+                    AND subject LIKE %s 
+                    AND standard = %s;'''
+                    
+        with connection as cursor:
+            cursor.execute(query, (title, date, subject, standard))
+            data = cursor.fetchall()
+
+            if not data:
+                return None
+
+            fields = (
+                'test_id',
+                'title', 
+                'description', 
+                'date', 
+                'subject',
+                'examiner'
+            )
+            records = []
+            for row in data:
+                records.append(dict(zip(fields, row)))
+
+            return records
