@@ -54,7 +54,7 @@
                 {% if data_tests %}
                     {% for row in data_tests %}
                         <tr>
-                            <td><a href="#">{{ row.title }}</a></td>
+                            <td><a href="{{ url_for('instructions', test=row.test_id) }}">{{ row.title }}</a></td>
                             <td>{{ row.description }}</td>
                             <td>{{ row.subject }}</td>
                             <td>{{ row.date }}</td>

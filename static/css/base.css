@@ -30,9 +30,27 @@ body {
   color: white;
 }
 
-
 .button-green-small {
   background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  margin: 0px 0px;
+  text-align: center;
+  text-decoration: none;
+  float: right;
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 5px;
+}
+
+.button-red-small:hover {
+  background-color:  rgb(122, 45, 45);
+  color: white;
+}
+
+.button-red-small {
+  background-color: red; /* Green */
   border: none;
   color: white;
   padding: 8px 12px;
@@ -255,3 +273,7 @@ ul.errors {
   color: red;
   }
 
+input[type=radio]{
+
+  margin-top: 20px;
+}

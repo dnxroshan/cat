@@ -10,8 +10,8 @@
 HOST = 'localhost'
 USER = 'root'
 PASSWORD = 'BigDipper@28'
-DATABASE = 'cat'
+DATABASE = 'caat'
 
 SECRET_KEY = 'A44vTADgo+2k8UIGnoP1QxSaHi0gFCi6TXfrycRF8u7a3AzOcaO5+nuEwiWz72g819mI34hLHpJ4jM5sXDs2lhh0Bif13u92p7i'
 
-UPLOAD_FOLDER = 'data'
+UPLOAD_FOLDER = 'uploads'

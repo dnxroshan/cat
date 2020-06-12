@@ -1,11 +1,13 @@
 
 import os
+import csv
 
 from flask import Flask
 from flask import render_template
 from flask import request
 from flask import redirect
 from flask import url_for
+from flask import session
 from flask import jsonify
 
 from flask_login import LoginManager
@@ -18,6 +20,7 @@ from table_users import TableUsers
 from table_candidates import TableCandidates
 from table_examiners import TableExaminers
 from table_tests import TableTests
+from table_question_bank import TableQuestionBank
 
 from form_login import FormLogin
 from form_candidate_reg import FormCandidateReg
@@ -27,7 +30,10 @@ from user import User
 from crypto import Crypto
 from misc import *
 import config
+from constants import Options, Difficulty
 import constants
+
+from test_engine import TestEngine
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -37,7 +43,10 @@ table_users = TableUsers()
 table_candidates = TableCandidates()
 table_examiners = TableExaminers()
 table_tests = TableTests()
+table_question_bank = TableQuestionBank()
 crypto = Crypto()
+
+test_engine = TestEngine(session)
 
 login_manager = LoginManager(app)
 
@@ -179,6 +188,19 @@ def candidate():
         data_tests=data_tests
     )
 
+@app.route('/candidate/instructions')
+@login_required
+def instructions():
+    authorized(constants.UserType.Candidate)
+    test_id = request.args.get('test')
+    test_info = table_tests.get_by_test_id(test_id)
+    return render_template(
+        'instructions.html', 
+        username = current_user.get_id(),
+        test_info=test_info,
+        test_id=test_id
+    )
+
 @app.route('/examiner/add-test', methods=['POST'])
 @login_required
 def add_test():
@@ -202,7 +224,11 @@ def add_test():
     new_test_id = table_tests.get_new_id()
     table_tests.add(new_test)
     qb_filename = generate_qb_filename(new_test_id)
-    uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], qb_filename))
+    qb_path = os.path.join(app.config['UPLOAD_FOLDER'], qb_filename)
+    uploaded_file.save(qb_path)
+    res = validate_and_save_qb(new_test_id, qb_path)
+    print(res)
+    os.remove(qb_path)
     return redirect(url_for('examiner'))
 
 @app.route('/examiner/get-tests', methods = ['GET'])
@@ -211,6 +237,38 @@ def get_tests():
     username = current_user.get_id()
     data = table_tests.get_by_examiner(username)
     return jsonify(data)
+
+@app.route('/candidate/start-test', methods=['POST'])
+@login_required
+def start_test():
+
+    test_engine.start(request.form.get('test'))
+    return redirect(url_for('run_test'), code=307)
+
+@app.route('/candidate/run-test', methods=['POST'])
+@login_required
+def run_test():
+
+    question = test_engine.question()
+    status = {
+        'question_no': session['question_no'],
+        'score'      : session['score'],
+        'difficulty' : session['difficulty']
+    }
+    return render_template(
+        'test.html', 
+        question=question, 
+        status = status
+    )
+
+@app.route('/candidate/result', methods=['POST'])
+@login_required
+def test_result():
+
+    test_engine.update(request.form.get('answer'))
+
+    return redirect(url_for('run_test'), code=307)
+
 
 @app.route('/logout')
 @login_required
@@ -235,6 +293,31 @@ def add_user(username, password, user_type):
     }
 
     table_users.add(new_user)
+
+def validate_and_save_qb(test_id, filename):
+
+    content = []
+    
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        n = 0
+        for row in reader:
+            if not n:
+                n = 1
+                continue
+
+            if len(row) != 7:
+                return 1
+            if not row[5].lower() in [Options.a, Options.b, Options.c, Options.d]:
+                return 2
+            if not row[6].upper() in [Difficulty.Easy, Difficulty.Medium, Difficulty.Hard]:
+                return 3
+
+            row.insert(0, test_id)
+            content.append(tuple(row))
+
+    table_question_bank.add(content)
+    return 0
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -81,7 +81,7 @@ class TableTests:
                 'score_easy',
                 'score_medium',
                 'score_hard' ,
-                'score_threshold', 
+                'score_threshold' 
             )
 
             records = []
@@ -147,3 +147,45 @@ class TableTests:
                 records.append(dict(zip(fields, row)))
 
             return records
+
+    def get_scores(self, test_id):
+        connection = self.__connect()
+
+        with connection as cursor:
+            query = '''SELECT 
+                            score_easy, 
+                            score_medium, 
+                            score_hard 
+                        FROM tests 
+                        WHERE test_id = %s;'''
+
+            cursor.execute(query, test_id)
+            data = cursor.fetchone()
+
+            if not data:
+                return None
+
+            fields = (
+                'score_easy',
+                'score_medium',
+                'score_hard' 
+            )
+
+            return dict(zip(fields, data))
+
+    def get_threshold_score(self, test_id):
+        connection = self.__connect()
+
+        with connection as cursor:
+            query = '''SELECT 
+                            score_threshold
+                        FROM tests 
+                        WHERE test_id = %s;'''
+
+            cursor.execute(query, test_id)
+            data = cursor.fetchone()
+
+            if not data:
+                return None
+
+            return data[0]
