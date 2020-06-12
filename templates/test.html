@@ -1,0 +1,41 @@
+
+{% extends "base.html" %}
+
+{% block head %}
+<title>CAAT|{{username}}</title>
+<link rel="stylesheet" type="text/css" href="../static/css/test.css">
+{% endblock %}
+
+{% block navlinks %}
+<a href="/logout"><button class="button-red-small">Stop</button></a>
+<div class="nav-label">
+    {{username}} |
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div id="col-1">
+        <h2>{{ question[1] }}</h2>
+        <form action="{{ url_for('test_result') }}" method="POST">
+            <input type="radio" name="answer" id="option-a" value= "a" required>
+            <label for="option-a">{{ question[2] }}</label><br>
+            <input type="radio" name="answer" id="option-b" value= "b" required>
+            <label for="option-b">{{ question[3] }}</label><br>
+            <input type="radio" name="answer" id="option-c" value= "c" required>
+            <label for="option-c">{{ question[4] }}</label><br>
+            <input type="radio" name="answer" id="option-d" value= "d" required>
+            <label for="option-d">{{ question[5] }}</label>
+            <br><br><br>
+            <input type="submit" value="Next" class="button-green">
+        </form>
+    </div>
+    <div id="col-2">
+        <ul id="status">
+            <li>Question No: {{ status.question_no }}</li>
+            <li>Score: {{ status.score }}</li>
+            <li>Difficulty: {{ status.difficulty }}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

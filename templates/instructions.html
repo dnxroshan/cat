@@ -1,0 +1,55 @@
+
+
+{% extends "base.html" %}
+
+{% block head %}
+<title>CAAT|{{username}}</title>
+<link rel="stylesheet" type="text/css" href="../static/css/instructions.css">
+{% endblock %}
+
+{% block navlinks %}
+<a href="/logout"><button class="button-green-small">Logout</button></a>
+<div class="nav-label">
+    {{username}} |
+</div>
+{% endblock %}
+
+{% block content %}
+    <div id="div-test-info">
+        <h2>{{ test_info.title }}</h2>
+        {{test_info.subject}}   {{test_info.date}}
+        <p>{{ test_info.description }}</p>
+    </div>
+    <dv id="div-instructions">
+        <h2><span style="color: green;">Instructions</span></h2>
+        <ul>    
+            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+            <li>Ut at ante a erat congue ultricies.</li>
+    
+            <li>Duis posuere dolor non dui vehicula, nec aliquet diam dictum.</li>
+            <li>Fusce elementum metus ac sem placerat bibendum.</li>
+    
+            <li>Suspendisse id arcu accumsan, facilisis purus et, rutrum nibh.</li>
+            <li>Nullam ullamcorper nunc eu quam porttitor, quis bibendum magna placerat.</li>
+    
+            <li>Fusce vitae est vitae leo interdum suscipit.</li>
+            <li>Maecenas dapibus velit ac tortor luctus, at tempus urna scelerisque.</li>
+            <li>Donec cursus orci venenatis, sodales ante vitae, sollicitudin massa.</li>
+            <li>Suspendisse vitae leo vel ante ultricies ullamcorper.</li>
+            <li>In ornare enim ut ante finibus fermentum.</li>
+            <li>Pellentesque vitae est a ante ornare dapibus.</li>
+    
+            <li>Proin euismod sem rutrum arcu pellentesque suscipit.</li>
+            <li>Curabitur in quam non lacus dapibus feugiat.</li>
+            <li>Sed non diam porttitor, posuere magna ac, consequat massa.</li>
+            <li>Donec sollicitudin eros sit amet velit imperdiet ullamcorper.</li>
+    
+        </ul>
+    </dv>
+    <div id="div-start-test">
+        <form action="{{ url_for('start_test') }}" method="POST">
+            <input type="hidden" name="test" value="{{ test_id }}">
+            <input type="submit" value="Start test" id="btn-start-test" class="button-green">
+        </form>
+    </div>
+{% endblock %}
