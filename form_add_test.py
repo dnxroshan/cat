@@ -1,5 +1,5 @@
 
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import TextField
 from wtforms.fields import DecimalField
 from wtforms.fields import SelectField
@@ -11,7 +11,7 @@ from wtforms import validators
 
 import constants
 
-class FormAddTest(Form):
+class FormAddTest(FlaskForm):
     title = TextField(
         'title',
         validators=[

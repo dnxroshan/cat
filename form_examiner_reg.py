@@ -1,5 +1,5 @@
 
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import TextField
 from wtforms import PasswordField
 from wtforms.fields import SelectMultipleField
@@ -9,7 +9,7 @@ from wtforms import widgets
 
 import constants
 
-class FormExaminerReg(Form):
+class FormExaminerReg(FlaskForm):
     username = TextField(
         'username',
         validators=[

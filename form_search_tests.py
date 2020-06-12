@@ -1,5 +1,5 @@
 
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import TextField
 from wtforms import PasswordField
 from wtforms.fields.html5 import DateField
@@ -9,12 +9,11 @@ from wtforms import validators
 
 import constants
 
-class FormSearchTests(Form):
+class FormSearchTests(FlaskForm):
 
     title = TextField(
         'Title',
         validators=[
-            validators
         ]
     )
 
